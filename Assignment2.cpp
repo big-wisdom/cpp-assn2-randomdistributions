@@ -41,14 +41,6 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
     std::uint32_t binSize;
     tie(bins, binSize) = generateBins(max, min, numberBins);
 
-    std::cout << "binSize" << binSize << std::endl;
-    for (DistributionPair dp : bins)
-    {
-        std::cout << "[" << dp.minValue << "," << dp.maxValue << "]"
-                  << std::endl;
-    }
-    std::cout << std::endl;
-
     // Then populate bins with random numbers
     std::random_device rd;
     std::mt19937 engine(rd());
@@ -127,20 +119,20 @@ void plotDistribution(std::string title,
     // find scale to maxPlotLineSize
     std::double_t scale =
         (double)maxPlotLineSize / (double)distribution[index].count;
-    std::cout << "Scale: " << scale << std::endl;
 
-    std::cout << "distribution.size() " << distribution.size() << std::endl;
+    std::cout << title << std::endl;
     for (DistributionPair dp : distribution)
     {
         std::string stars((uint32_t)(dp.count * scale), '*');
         std::cout << "[" << dp.minValue << ", " << dp.maxValue
                   << "] : " << stars << std::endl;
     }
+    std::cout << std::endl;
 }
 
 int main()
 {
-    auto uniform = generateUniformDistribution(1000, 0, 19, 4);
+    auto uniform = generateUniformDistribution(100000, 0, 79, 40);
     plotDistribution("--- Uniform ---", uniform, 80);
 
     // auto normal = generateNormalDistribution(100000, 50, 5, 40);
