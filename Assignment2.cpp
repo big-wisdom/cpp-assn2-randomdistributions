@@ -30,15 +30,8 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
         previousMax = i;
     }
 
-    for (DistributionPair dp : bins)
-    {
-        std::cout << dp.maxValue << std::endl;
-    }
-    std::cout << std::endl;
-
     // Then populate bins with random numbers
     std::random_device rd;
-    std::cout << "Entropy " << rd.entropy() << std::endl;
     std::mt19937 engine(rd());
     std::uniform_int_distribution<unsigned int> distInt(min, max);
     for (std::uint32_t i = 0; i < howMany; i++)
@@ -54,11 +47,6 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
         bins[index].count += 1;
     }
 
-    std::cout << std::endl << "Bins" << std::endl;
-    for (DistributionPair dp : bins)
-    {
-        std::cout << dp.count << std::endl;
-    }
     return bins;
 }
 
@@ -71,4 +59,35 @@ std::vector<DistributionPair>
 generatePoissonDistribution(std::uint32_t howMany, std::uint8_t howOften,
                             std::uint8_t numberBins);
 
-int main() { generateUniformDistribution(10, 10, 30, 5); }
+// PLOT
+void plotDistribution(std::string title,
+                      const std::vector<DistributionPair>& distribution,
+                      const std::uint8_t maxPlotLineSize)
+{
+    // find the largest count
+    std::uint32_t max = 0;
+    std::uint32_t index;
+    for (int i = 0; i < distribution.size(); i++)
+    {
+        if (distribution[i].count > max)
+        {
+            max = distribution[i].count;
+            index = i;
+        }
+    }
+
+    // find scale to maxPlotLineSize
+    std::uint32_t scale = maxPlotLineSize / distribution[index].count;
+    for (DistributionPair dp : distribution)
+    {
+        std::string stars(dp.count * scale, '*');
+        std::cout << stars << std::endl;
+    }
+}
+
+int main()
+{
+    std::vector<DistributionPair> bins =
+        generateUniformDistribution(1000, 0, 100, 10);
+    plotDistribution("Uniform Distribution", bins, 150);
+}
