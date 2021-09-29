@@ -1,6 +1,7 @@
+.DS*
 CMakeCache.txt
 CMakeFiles*
 Makefile
-RandomDistributions
+Rand*
 cmake_install.cmake
 compile_commands.json

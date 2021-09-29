@@ -6,8 +6,8 @@
 class DistributionPair
 {
   public:
-    DistributionPair(std::uint32_t minValue, std::uint32_t maxValue)
-        : minValue(minValue), maxValue(maxValue), count(0)
+    DistributionPair(std::uint32_t minValue, std::uint32_t maxValue) :
+        minValue(minValue), maxValue(maxValue), count(0)
     {
     }
 
@@ -78,7 +78,7 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
     // generate random numbers
     std::random_device rd;
     std::mt19937 engine(rd());
-    std::normal_distribution<> distNorm{mean, stdev};
+    std::normal_distribution<> distNorm{ mean, stdev };
     for (std::uint32_t i = 0; i < howMany; i++)
     {
         auto rn = distNorm(engine);
@@ -100,10 +100,44 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
 
     return bins;
 }
+
 // POISSON DISTRIBUTION
 std::vector<DistributionPair>
 generatePoissonDistribution(std::uint32_t howMany, std::uint8_t howOften,
-                            std::uint8_t numberBins);
+                            std::uint8_t numberBins)
+{
+    std::uint32_t min = 0;
+    std::uint32_t max = numberBins - 1;
+
+    std::vector<DistributionPair> bins;
+    std::uint32_t binSize;
+    tie(bins, binSize) = generateBins(max, min, numberBins);
+
+    // generate random numbers
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::poisson_distribution<int> distPoisson(howOften);
+    for (std::uint32_t i = 0; i < howMany; i++)
+    {
+        auto rn = distPoisson(engine);
+        unsigned int index =
+            (unsigned int)((rn - min) / binSize); // find the index of the bin
+
+        if (index >= numberBins) // correct for if it's the max or above
+        {
+            index = numberBins - 1;
+        }
+
+        if (index < 0)
+        {
+            index = 0;
+        }
+
+        bins[index].count += 1;
+    }
+
+    return bins;
+}
 
 // PLOT
 void plotDistribution(std::string title,
@@ -144,6 +178,6 @@ int main()
     auto normal = generateNormalDistribution(100000, 50, 5, 40);
     plotDistribution("--- Normal ---", normal, 80);
 
-    // auto poisson = generatePoissonDistribution(100000, 6, 40);
-    // plotDistribution("--- Poisson ---", poisson, 80);
+    auto poisson = generatePoissonDistribution(100000, 6, 40);
+    plotDistribution("--- Poisson ---", poisson, 80);
 }

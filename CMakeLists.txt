@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-set(PROJECT_NAME RandomDistributions)
+set(PROJECT_NAME RandDistributions)
 project(${PROJECT_NAME})
 
 set(SOURCE_FILES Assignment2.cpp)
