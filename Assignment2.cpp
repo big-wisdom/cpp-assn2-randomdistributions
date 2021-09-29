@@ -67,7 +67,7 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
                            std::uint8_t numberBins)
 {
     // calculate max and min
-    std::uint32_t max = mean + (4 * stdev);
+    std::uint32_t max = mean + (4 * stdev) - 1;
     std::uint32_t min = mean - (4 * stdev);
 
     // generate bins
@@ -76,21 +76,21 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
     tie(bins, binSize) = generateBins(max, min, numberBins);
 
     // generate random numbers
-    std::random_device rd;
-    std::mt19937 engine(rd());
-    std::uniform_int_distribution<unsigned int> distInt(min, max);
-    for (std::uint32_t i = 0; i < howMany; i++)
-    {
-        auto rn = distInt(engine);
-        auto index = (rn - min) / binSize; // find the index of the bin
+    // std::random_device rd;
+    // std::mt19937 engine(rd());
+    // std::uniform_int_distribution<unsigned int> distInt(min, max);
+    // for (std::uint32_t i = 0; i < howMany; i++)
+    // {
+    // auto rn = distInt(engine);
+    // auto index = (rn - min) / binSize; // find the index of the bin
 
-        if (index >= numberBins) // correct for if it's the max or above
-        {
-            index = numberBins - 1;
-        }
+    // if (index >= numberBins) // correct for if it's the max or above
+    // {
+    // index = numberBins - 1;
+    // }
 
-        bins[index].count += 1;
-    }
+    // bins[index].count += 1;
+    // }
 
     return bins;
 }
@@ -135,8 +135,8 @@ int main()
     auto uniform = generateUniformDistribution(100000, 0, 79, 40);
     plotDistribution("--- Uniform ---", uniform, 80);
 
-    // auto normal = generateNormalDistribution(100000, 50, 5, 40);
-    // plotDistribution("--- Normal ---", normal, 80);
+    auto normal = generateNormalDistribution(100000, 50, 5, 40);
+    plotDistribution("--- Normal ---", normal, 80);
 
     // auto poisson = generatePoissonDistribution(100000, 6, 40);
     // plotDistribution("--- Poisson ---", poisson, 80);
