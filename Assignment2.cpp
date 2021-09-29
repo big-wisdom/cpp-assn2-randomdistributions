@@ -22,10 +22,10 @@ generateBins(std::uint32_t max, std::uint32_t min, uint8_t numberBins)
 {
     std::vector<DistributionPair> bins;
     std::uint32_t binSize = (max - min) / numberBins;
-    std::uint32_t previousMax = min;
-    for (std::uint32_t i = min + binSize; i <= max; i += binSize)
+    std::uint32_t previousMax = min - 1;
+    for (std::uint32_t i = min + binSize; i <= max; i += binSize + 1)
     {
-        bins.push_back(DistributionPair(previousMax, i));
+        bins.push_back(DistributionPair(previousMax + 1, i));
         previousMax = i;
     }
     return std::make_tuple(bins, binSize);
@@ -41,6 +41,14 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
     std::uint32_t binSize;
     tie(bins, binSize) = generateBins(max, min, numberBins);
 
+    std::cout << "binSize" << binSize << std::endl;
+    for (DistributionPair dp : bins)
+    {
+        std::cout << "[" << dp.minValue << "," << dp.maxValue << "]"
+                  << std::endl;
+    }
+    std::cout << std::endl;
+
     // Then populate bins with random numbers
     std::random_device rd;
     std::mt19937 engine(rd());
@@ -48,7 +56,7 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
     for (std::uint32_t i = 0; i < howMany; i++)
     {
         auto rn = distInt(engine);
-        auto index = (rn - min) / binSize; // find the index of the bin
+        auto index = (rn - min) / (binSize + 1); // find the index of the bin
 
         if (index >= numberBins) // correct for if it's the max or above
         {
@@ -66,10 +74,32 @@ std::vector<DistributionPair>
 generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
                            std::uint8_t numberBins)
 {
+    // calculate max and min
     std::uint32_t max = mean + (4 * stdev);
     std::uint32_t min = mean - (4 * stdev);
 
+    // generate bins
     std::vector<DistributionPair> bins;
+    std::uint32_t binSize;
+    tie(bins, binSize) = generateBins(max, min, numberBins);
+
+    // generate random numbers
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_int_distribution<unsigned int> distInt(min, max);
+    for (std::uint32_t i = 0; i < howMany; i++)
+    {
+        auto rn = distInt(engine);
+        auto index = (rn - min) / binSize; // find the index of the bin
+
+        if (index >= numberBins) // correct for if it's the max or above
+        {
+            index = numberBins - 1;
+        }
+
+        bins[index].count += 1;
+    }
+
     return bins;
 }
 // POISSON DISTRIBUTION
@@ -95,17 +125,27 @@ void plotDistribution(std::string title,
     }
 
     // find scale to maxPlotLineSize
-    std::uint32_t scale = maxPlotLineSize / distribution[index].count;
+    std::double_t scale =
+        (double)maxPlotLineSize / (double)distribution[index].count;
+    std::cout << "Scale: " << scale << std::endl;
+
+    std::cout << "distribution.size() " << distribution.size() << std::endl;
     for (DistributionPair dp : distribution)
     {
-        std::string stars(dp.count * scale, '*');
-        std::cout << stars << std::endl;
+        std::string stars((uint32_t)(dp.count * scale), '*');
+        std::cout << "[" << dp.minValue << ", " << dp.maxValue
+                  << "] : " << stars << std::endl;
     }
 }
 
 int main()
 {
-    std::vector<DistributionPair> bins =
-        generateUniformDistribution(1000, 0, 100, 10);
-    plotDistribution("Uniform Distribution", bins, 150);
+    auto uniform = generateUniformDistribution(1000, 0, 19, 4);
+    plotDistribution("--- Uniform ---", uniform, 80);
+
+    // auto normal = generateNormalDistribution(100000, 50, 5, 40);
+    // plotDistribution("--- Normal ---", normal, 80);
+
+    // auto poisson = generatePoissonDistribution(100000, 6, 40);
+    // plotDistribution("--- Poisson ---", poisson, 80);
 }
