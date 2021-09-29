@@ -21,9 +21,9 @@ std::tuple<std::vector<DistributionPair>, std::uint32_t>
 generateBins(std::uint32_t max, std::uint32_t min, uint8_t numberBins)
 {
     std::vector<DistributionPair> bins;
-    std::uint32_t binSize = (max - min) / numberBins;
+    std::uint32_t binSize = ((max - min) / numberBins) + 1;
     std::uint32_t previousMax = min - 1;
-    for (std::uint32_t i = min + binSize; i <= max; i += binSize + 1)
+    for (std::uint32_t i = previousMax + binSize; i <= max; i += binSize)
     {
         bins.push_back(DistributionPair(previousMax + 1, i));
         previousMax = i;
@@ -48,7 +48,7 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
     for (std::uint32_t i = 0; i < howMany; i++)
     {
         auto rn = distInt(engine);
-        auto index = (rn - min) / (binSize + 1); // find the index of the bin
+        auto index = (rn - min) / (binSize); // find the index of the bin
 
         if (index >= numberBins) // correct for if it's the max or above
         {
@@ -76,21 +76,27 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
     tie(bins, binSize) = generateBins(max, min, numberBins);
 
     // generate random numbers
-    // std::random_device rd;
-    // std::mt19937 engine(rd());
-    // std::uniform_int_distribution<unsigned int> distInt(min, max);
-    // for (std::uint32_t i = 0; i < howMany; i++)
-    // {
-    // auto rn = distInt(engine);
-    // auto index = (rn - min) / binSize; // find the index of the bin
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::normal_distribution<> distNorm{mean, stdev};
+    for (std::uint32_t i = 0; i < howMany; i++)
+    {
+        auto rn = distNorm(engine);
+        unsigned int index =
+            (unsigned int)((rn - min) / binSize); // find the index of the bin
 
-    // if (index >= numberBins) // correct for if it's the max or above
-    // {
-    // index = numberBins - 1;
-    // }
+        if (index >= numberBins) // correct for if it's the max or above
+        {
+            index = numberBins - 1;
+        }
 
-    // bins[index].count += 1;
-    // }
+        if (index < 0)
+        {
+            index = 0;
+        }
+
+        bins[index].count += 1;
+    }
 
     return bins;
 }
