@@ -1,20 +1,13 @@
+#include "distributions.hpp"
 #include <iostream>
 #include <random>
-#include <tuple>
+#include <string>
 #include <vector>
 
-class DistributionPair
-{
-  public:
-    DistributionPair(std::uint32_t minValue, std::uint32_t maxValue) :
-        minValue(minValue), maxValue(maxValue), count(0)
-    {
-    }
+DistributionPair::DistributionPair(std::uint32_t minValue,
+                                   std::uint32_t maxValue)
+    : minValue(minValue), maxValue(maxValue), count(0) {}
 
-    std::uint32_t minValue;
-    std::uint32_t maxValue;
-    std::uint32_t count;
-};
 
 // Generate Bins
 std::tuple<std::vector<DistributionPair>, std::uint32_t>
@@ -30,6 +23,7 @@ generateBins(std::uint32_t max, std::uint32_t min, uint8_t numberBins)
     }
     return std::make_tuple(bins, binSize);
 }
+
 
 // UNIFORM DISTRIBUTION
 std::vector<DistributionPair>
@@ -139,6 +133,7 @@ generatePoissonDistribution(std::uint32_t howMany, std::uint8_t howOften,
     return bins;
 }
 
+
 // PLOT
 void plotDistribution(std::string title,
                       const std::vector<DistributionPair>& distribution,
@@ -168,16 +163,4 @@ void plotDistribution(std::string title,
                   << "] : " << stars << std::endl;
     }
     std::cout << std::endl;
-}
-
-int main()
-{
-    auto uniform = generateUniformDistribution(100000, 0, 79, 40);
-    plotDistribution("--- Uniform ---", uniform, 80);
-
-    auto normal = generateNormalDistribution(100000, 50, 5, 40);
-    plotDistribution("--- Normal ---", normal, 80);
-
-    auto poisson = generatePoissonDistribution(100000, 6, 40);
-    plotDistribution("--- Poisson ---", poisson, 80);
 }
