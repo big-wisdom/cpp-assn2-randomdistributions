@@ -67,8 +67,8 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
                            std::uint8_t numberBins)
 {
     // calculate max and min
-    std::uint32_t max = mean + (4 * stdev) - 1;
-    std::uint32_t min = mean - (4 * stdev);
+    std::uint32_t max = static_cast<std::uint32_t> (mean + (4 * stdev) - 1);
+    std::uint32_t min = static_cast<std::uint32_t> (mean - (4 * stdev));
 
     // generate bins
     std::vector<DistributionPair> bins;
@@ -146,7 +146,7 @@ void plotDistribution(std::string title,
 {
     // find the largest count
     std::uint32_t max = 0;
-    std::uint32_t index;
+    std::uint32_t index = 0;
     for (unsigned int i = 0; i < distribution.size(); i++)
     {
         if (distribution[i].count > max)

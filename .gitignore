@@ -6,3 +6,6 @@ Makefile
 Rand*
 cmake_install.cmake
 compile_commands.json
+.vs*
+build*
+out*
