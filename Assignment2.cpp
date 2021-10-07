@@ -82,7 +82,7 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
     for (std::uint32_t i = 0; i < howMany; i++)
     {
         auto rn = distNorm(engine);
-        unsigned int index =
+        int index =
             (unsigned int)((rn - min) / binSize); // find the index of the bin
 
         if (index >= numberBins) // correct for if it's the max or above
@@ -120,7 +120,7 @@ generatePoissonDistribution(std::uint32_t howMany, std::uint8_t howOften,
     for (std::uint32_t i = 0; i < howMany; i++)
     {
         auto rn = distPoisson(engine);
-        unsigned int index =
+        int index =
             (unsigned int)((rn - min) / binSize); // find the index of the bin
 
         if (index >= numberBins) // correct for if it's the max or above
@@ -147,7 +147,7 @@ void plotDistribution(std::string title,
     // find the largest count
     std::uint32_t max = 0;
     std::uint32_t index;
-    for (int i = 0; i < distribution.size(); i++)
+    for (unsigned int i = 0; i < distribution.size(); i++)
     {
         if (distribution[i].count > max)
         {
