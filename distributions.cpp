@@ -3,6 +3,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <tuple>
 
 DistributionPair::DistributionPair(std::uint32_t minValue,
                                    std::uint32_t maxValue)
@@ -10,8 +11,7 @@ DistributionPair::DistributionPair(std::uint32_t minValue,
 
 
 // Generate Bins
-std::tuple<std::vector<DistributionPair>, std::uint32_t>
-generateBins(std::uint32_t max, std::uint32_t min, uint8_t numberBins)
+std::tuple<std::vector<DistributionPair>, std::uint32_t> myGenerateBins(std::uint32_t max, std::uint32_t min, uint8_t numberBins)
 {
     std::vector<DistributionPair> bins;
     std::uint32_t binSize = ((max - min) / numberBins) + 1;
@@ -33,7 +33,7 @@ generateUniformDistribution(std::uint32_t howMany, std::uint32_t min,
     // Generate bins first
     std::vector<DistributionPair> bins;
     std::uint32_t binSize;
-    tie(bins, binSize) = generateBins(max, min, numberBins);
+    tie(bins, binSize) = myGenerateBins(max, min, numberBins);
 
     // Then populate bins with random numbers
     std::random_device rd;
@@ -67,7 +67,7 @@ generateNormalDistribution(std::uint32_t howMany, float mean, float stdev,
     // generate bins
     std::vector<DistributionPair> bins;
     std::uint32_t binSize;
-    tie(bins, binSize) = generateBins(max, min, numberBins);
+    tie(bins, binSize) = myGenerateBins(max, min, numberBins);
 
     // generate random numbers
     std::random_device rd;
@@ -105,7 +105,7 @@ generatePoissonDistribution(std::uint32_t howMany, std::uint8_t howOften,
 
     std::vector<DistributionPair> bins;
     std::uint32_t binSize;
-    tie(bins, binSize) = generateBins(max, min, numberBins);
+    tie(bins, binSize) = myGenerateBins(max, min, numberBins);
 
     // generate random numbers
     std::random_device rd;
